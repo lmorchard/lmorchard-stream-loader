@@ -62,7 +62,7 @@ function draw() {
     content.style.marginBottom = `${BORDER.h}px`;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = rgbCSS(c64Colors.black);
+  ctx.fillStyle = "#000000";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   particles.forEach(particle => drawParticle(particle, ctx));
@@ -171,7 +171,7 @@ const $$ = id => document.getElementById(id);
 
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
-const pickColor = () => pick(Object.values(c64Colors));
+const pickColor = () => pick(Object.values(colors));
 
 const pickRange = ({ min, max }) => min + Math.random() * (max - min);
 
@@ -200,25 +200,25 @@ const formatTimer = duration => {
   return hours + ":" + minutes + ":" + seconds + "." + milliseconds;  
 };
 
-const c64Colors = Object
+const colors = Object
   .entries({
-    // https://lospec.com/palette-list/commodore64
+    // http://unusedino.de/ec64/technical/misc/vic656x/colors/
     black: "#000000",
-    grey0: "#626262",
-    grey1: "#898989",
-    grey2: "#adadad",
-    white: "#ffffff",
-    red: "#9f4e44",
-    pink: "#cb7e75",
-    tan: "#6d5412",
-    brown: "#a1683c",
-    olive: "#c9d487",
-    mint: "#9ae29b",
-    green: "#5cab5e",
-    teal: "#6abfc6",
-    blue1: "#887ecb",
-    blue0: "#50459b",
-    purple: "#a057a3",
+    white: "#FFFFFF",
+    red: "#68372B",
+    cyan: "#70A4B2",
+    purple: "#6F3D86",
+    green: "#588D43",
+    blue: "#352879",
+    yellow: "#B8C76F",
+    orange: "#6F4F25",
+    brown: "#433900",
+    ltred: "#9A6759",
+    dkgrey: "#444444",
+    grey: "#6C6C6C",
+    ltgreen: "#9AD284",
+    ltblue: "#6C5EB5",
+    ltgrey: "#959595",    
   })
   .reduce((acc, [ name, hex ]) => Object.assign({}, acc, {
     [name]: [
