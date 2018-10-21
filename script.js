@@ -4,25 +4,24 @@ const COLOR_TIME_RANGE = { min: 750, max: 3000 };
 const BAR_HEIGHT_RANGE = { min: 10, max: 100 };
 const DY_RANGE = { min: 0.01, max: 0.1 };
 const MAX_STATUS_TIME = 7 * 1000;
+const UPDATE_PERIOD = 1000 / 30;
 
 let content, canvas, ctx;
 let updateTimer, lastUpdate, currStatusTime;
-let particles = [];
-let bgParticle;
+let particles, bgParticle;
 
 let currTimer, maxTimer;
 
 function init() {
   const urlParams = new URLSearchParams(window.location.search);
   maxTimer = 1000 * (parseInt(urlParams.get("timer")) || 600);
-  
   $$("title").innerHTML = urlParams.get("title") || "Now loading...";
   
   currTimer = 0;
   currStatusTime = 0;
   
-  content = document.getElementById("content");
-  canvas = document.getElementById("main");
+  content = $$("content");
+  canvas = $$("main");
   ctx = canvas.getContext("2d");
   resize();
   
@@ -30,7 +29,7 @@ function init() {
   pickStatusMessage();
   
   lastUpdate = Date.now();
-  setTimeout(update, 16);
+  setTimeout(update, UPDATE_PERIOD);
   window.requestAnimationFrame(draw);
   clean();
 }
@@ -45,13 +44,14 @@ function update() {
 
   updateStatusMessage(deltaT);
   
-  updateTimer = setTimeout(update, 16);  
+  setTimeout(update, UPDATE_PERIOD);  
 }
 
 function draw() {
   resize();
 
   $$("timer").innerHTML = formatTimer(Math.max(0.0, maxTimer - currTimer));
+  
   $$("statusMessage").style.opacity = `${Math.min(1.0, 0.1 + Math.abs(Math.sin(currTimer / 1000)))}`;
   
   bgParticle.h = canvas.height;
@@ -95,6 +95,8 @@ function updateStatusMessage(deltaT) {
 }
 
 function initParticles() {
+  particles = [];
+  
   bgParticle = createParticle({ direction: 0 });
   particles.push(bgParticle);
 
@@ -163,6 +165,7 @@ function updateParticle(particle, deltaT) {
 
 function drawParticle(particle, ctx) {
   if (!particle.live) { return; }
+  
   ctx.fillStyle = rgbCSS(particle.color);
   ctx.fillRect(0, particle.y, canvas.width, particle.h);
 }
