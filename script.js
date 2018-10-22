@@ -4,25 +4,24 @@ const COLOR_TIME_RANGE = { min: 750, max: 3000 };
 const BAR_HEIGHT_RANGE = { min: 10, max: 100 };
 const DY_RANGE = { min: 0.01, max: 0.1 };
 const MAX_STATUS_TIME = 7 * 1000;
+const UPDATE_PERIOD = 1000 / 30;
 
 let content, canvas, ctx;
 let updateTimer, lastUpdate, currStatusTime;
-let particles = [];
-let bgParticle;
+let particles, bgParticle;
 
 let currTimer, maxTimer;
 
 function init() {
   const urlParams = new URLSearchParams(window.location.search);
   maxTimer = 1000 * (parseInt(urlParams.get("timer")) || 600);
-  
   $$("title").innerHTML = urlParams.get("title") || "Now loading...";
   
   currTimer = 0;
   currStatusTime = 0;
   
-  content = document.getElementById("content");
-  canvas = document.getElementById("main");
+  content = $$("content");
+  canvas = $$("main");
   ctx = canvas.getContext("2d");
   resize();
   
@@ -30,7 +29,7 @@ function init() {
   pickStatusMessage();
   
   lastUpdate = Date.now();
-  setTimeout(update, 16);
+  setTimeout(update, UPDATE_PERIOD);
   window.requestAnimationFrame(draw);
   clean();
 }
@@ -45,13 +44,14 @@ function update() {
 
   updateStatusMessage(deltaT);
   
-  updateTimer = setTimeout(update, 16);  
+  setTimeout(update, UPDATE_PERIOD);  
 }
 
 function draw() {
   resize();
 
   $$("timer").innerHTML = formatTimer(Math.max(0.0, maxTimer - currTimer));
+  
   $$("statusMessage").style.opacity = `${Math.min(1.0, 0.1 + Math.abs(Math.sin(currTimer / 1000)))}`;
   
   bgParticle.h = canvas.height;
@@ -62,7 +62,7 @@ function draw() {
     content.style.marginBottom = `${BORDER.h}px`;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = rgbCSS(c64Colors.black);
+  ctx.fillStyle = "#000000";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   particles.forEach(particle => drawParticle(particle, ctx));
@@ -95,6 +95,8 @@ function updateStatusMessage(deltaT) {
 }
 
 function initParticles() {
+  particles = [];
+  
   bgParticle = createParticle({ direction: 0 });
   particles.push(bgParticle);
 
@@ -163,6 +165,7 @@ function updateParticle(particle, deltaT) {
 
 function drawParticle(particle, ctx) {
   if (!particle.live) { return; }
+  
   ctx.fillStyle = rgbCSS(particle.color);
   ctx.fillRect(0, particle.y, canvas.width, particle.h);
 }
@@ -171,7 +174,7 @@ const $$ = id => document.getElementById(id);
 
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
-const pickColor = () => pick(Object.values(c64Colors));
+const pickColor = () => pick(Object.values(colors));
 
 const pickRange = ({ min, max }) => min + Math.random() * (max - min);
 
@@ -200,25 +203,25 @@ const formatTimer = duration => {
   return hours + ":" + minutes + ":" + seconds + "." + milliseconds;  
 };
 
-const c64Colors = Object
+const colors = Object
   .entries({
-    // https://lospec.com/palette-list/commodore64
+    // http://unusedino.de/ec64/technical/misc/vic656x/colors/
     black: "#000000",
-    grey0: "#626262",
-    grey1: "#898989",
-    grey2: "#adadad",
-    white: "#ffffff",
-    red: "#9f4e44",
-    pink: "#cb7e75",
-    tan: "#6d5412",
-    brown: "#a1683c",
-    olive: "#c9d487",
-    mint: "#9ae29b",
-    green: "#5cab5e",
-    teal: "#6abfc6",
-    blue1: "#887ecb",
-    blue0: "#50459b",
-    purple: "#a057a3",
+    white: "#FFFFFF",
+    red: "#68372B",
+    cyan: "#70A4B2",
+    purple: "#6F3D86",
+    green: "#588D43",
+    blue: "#352879",
+    yellow: "#B8C76F",
+    orange: "#6F4F25",
+    brown: "#433900",
+    ltred: "#9A6759",
+    dkgrey: "#444444",
+    grey: "#6C6C6C",
+    ltgreen: "#9AD284",
+    ltblue: "#6C5EB5",
+    ltgrey: "#959595",    
   })
   .reduce((acc, [ name, hex ]) => Object.assign({}, acc, {
     [name]: [
