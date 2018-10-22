@@ -1,37 +1,9 @@
-Welcome to Glitch
-=================
+# lmorchard-stream-loader
 
-Click `Show` in the header to see your app live. Updates to your code will instantly deploy and update live.
+This is a "starting soon" / "be right back" scene that I'm playing
+with for [my live coding stream](https://twitch.tv/lmorchard). It's
+inspired by old C64 loaders that would update the screen border with
+data while decompressing content as it loaded.
 
-**Glitch** is the friendly community where you'll build the app of your dreams. Glitch lets you instantly create, remix, edit, and host an app, bot or site, and you can invite collaborators or helpers to simultaneously edit code with you.
-
-Find out more [about Glitch](https://glitch.com/about).
-
-
-Your Project
-------------
-
-### ← README.md
-
-That's this file, where you can tell people what your cool website does and how you built it.
-
-### ← index.html
-
-Where you'll write the content of your website. 
-
-### ← style.css
-
-CSS files add styling rules to your content.
-
-### ← script.js
-
-If you're feeling fancy you can add interactivity to your site with JavaScript.
-
-### ← assets
-
-Drag in `assets`, like images or music, to add them to your project
-
-Made by [Glitch](https://glitch.com/)
--------------------
-
-\ ゜o゜)ノ
+Those old loaders were pretty flashy & seizuriffic, so I've tried to
+make this version a bit more chill and smooth.
