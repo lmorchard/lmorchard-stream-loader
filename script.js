@@ -113,24 +113,21 @@ function initParticles() {
   }
 }
 
-function createParticle({ direction = 1 }) {
-  const p = {};
+const createParticle = (props = {}) => Object.assign({
+  live: true,
+  color: null,
+  prevColor: pickColor(), 
+  nextColor: pickColor(),
+  maxColorTime: pickRange(COLOR_TIME_RANGE),
+  colorTime: 0,
+  y: 0,
+  direction: 1,
+  dy: pickRange(DY_RANGE),
+  h: pickRange(BAR_HEIGHT_RANGE),
+}, props);
 
-  p.live = true;
-  p.direction = direction;
-  p.prevColor = p.color = pickColor();
-  p.nextColor = pickColor();
-  p.maxColorTime = pickRange(COLOR_TIME_RANGE);
-  p.colorTime = 0;
-  p.y = 0;
-  p.dy = direction * pickRange(DY_RANGE);
-  p.h = pickRange(BAR_HEIGHT_RANGE);
-  
-  return p;
-}
-
-function spawnParticle(params) {
-  const particle = createParticle(params);
+function spawnParticle(props) {
+  const particle = createParticle(props);
   particle.y = particle.direction > 0
     ? 0 - particle.h
     : canvas.height + particle.h;
@@ -143,11 +140,12 @@ function updateParticle(particle, deltaT) {
   particle.colorTime += deltaT;  
   if (particle.colorTime >= particle.maxColorTime) {
     particle.colorTime = 0;
+    particle.maxColorTime = pickRange(COLOR_TIME_RANGE);
     particle.prevColor = particle.color = particle.nextColor;
     particle.nextColor = pickColor();
   }
   
-  particle.y += particle.dy * deltaT;
+  particle.y += particle.direction * particle.dy * deltaT;
   if (
     (particle.direction < 0 && particle.y <= 0 - particle.h) ||
     (particle.direction > 0 && particle.y >= canvas.height + particle.h)
@@ -160,13 +158,13 @@ function updateParticle(particle, deltaT) {
     particle.prevColor,
     particle.nextColor,
     particle.colorTime / particle.maxColorTime
-  );
+  );  
 }
 
 function drawParticle(particle, ctx) {
-  if (!particle.live) { return; }
+  if (!particle.live || !particle.color) { return; }
   
-  ctx.fillStyle = rgbCSS(particle.color);
+  ctx.fillStyle = rgbaCSS(particle.color);
   ctx.fillRect(0, particle.y, canvas.width, particle.h);
 }
 
@@ -174,19 +172,19 @@ const $$ = id => document.getElementById(id);
 
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
-const pickColor = () => pick(Object.values(colors));
+const pickColor = () => [
+  ...pick(Object.values(colors)),
+  0.3 + 0.7 * Math.random()
+];
 
 const pickRange = ({ min, max }) => min + Math.random() * (max - min);
 
 const lerp = (v0, v1, t) => v0 * (1 - t) + v1 * t;
 
-const lerpColor = (c0, c1, t) => ([
-  lerp(c0[0], c1[0], t),
-  lerp(c0[1], c1[1], t),
-  lerp(c0[2], c1[2], t),
-]);
+const lerpColor = (c0, c1, t) =>
+  c0.map((c, idx) => lerp(c0[idx], c1[idx], t));
 
-const rgbCSS = ([r, g, b]) => `rgb(${r}, ${g}, ${b})`;
+const rgbaCSS = ([r, g, b, a = 1.0]) => `rgba(${r}, ${g}, ${b}, ${a})`;
 
 const timerFactors = [ 1000, 60 * 1000, 60 * 60 * 1000 ];
 
